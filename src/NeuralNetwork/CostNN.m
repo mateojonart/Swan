@@ -1,5 +1,5 @@
-classdef CostNN < handle 
-    
+classdef CostNN < handle
+
     properties (Access = public)
         value
         gradient
@@ -74,7 +74,7 @@ classdef CostNN < handle
         end
 
     end
-    
+
     methods (Access = private)
 
         function init(obj,cParams)
@@ -87,8 +87,11 @@ classdef CostNN < handle
             bDa  = length(obj.shapeFunctions);
             Jc  = cell(nF,1);
             dJc = cell(nF,1);
+            jV = 0;
+            djV = zeros(size(x));
             for iF = 1:nF
                 shI = obj.shapeFunctions{iF};
+                wI  = obj.weights(iF);
                 if nargout(compFunc) == 2
                     [j,dJ]  = compFunc(shI,x);
                     bDa(iF) = false;
@@ -97,13 +100,7 @@ classdef CostNN < handle
                     bDa(iF) = bD;
                 end
                 Jc{iF}  = j;
-                dJc{iF} = obj.mergeGradient(dJ);
-            end
-            
-            jV  = 0;
-            djV = zeros(size(dJc{1}));
-            for iF = 1:nF
-                wI  = obj.weights(iF);
+                dJc{iF} = obj.mergeGradient(dJ);  
                 jV  = jV  + wI*Jc{iF};
                 djV = djV + wI*dJc{iF};
             end

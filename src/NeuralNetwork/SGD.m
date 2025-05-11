@@ -23,7 +23,7 @@ classdef SGD < Trainer
             obj.learningRate = s.learningRate;
             obj.maxFunEvals  = 5000;
             obj.optTolerance = 1e-8;
-            obj.timeStop    = Inf([1,1]);
+            obj.timeStop    = Inf;
             obj.fvStop      = 1e-4;
             obj.nPlot       = 1;
             obj.MaxEpochs   = s.maxEpochs;
@@ -178,7 +178,7 @@ classdef SGD < Trainer
     end
     
     methods (Access = protected)
-        function x = step(obj,x,e,grad)
+        function x = step(~, x,e,grad)
             x = x - e*grad;
         end
     end

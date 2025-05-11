@@ -88,18 +88,18 @@ classdef LossFunctional < handle
             end
         end
 
-        function [ord,nBatches] = computeNumberOfBatchesAndOrder(obj)
+        function computeNumberOfBatchesAndOrder(obj)
             nD = size(obj.data.Xtrain,1);            
-            [batchSize] = obj.computeBatchSize();
-            nBatches = fix(nD/batchSize);
-            if nBatches == 1 || nBatches == 0
+            batchSize = obj.computeBatchSize();
+            nB = fix(nD/batchSize);
+            if nB == 1 || nB == 0
                 ord = 1:nD;
-                nBatches = 1;
+                nB = 1;
             else
-                ord = randperm(nD,nD);
+                ord = randperm(nD);
             end
             obj.order = ord;
-            obj.nBatches = nBatches;
+            obj.nBatches = nB;
         end
 
         function itIs = isBatchDepleted(obj,iBatch,moveBatch)

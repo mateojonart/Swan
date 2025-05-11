@@ -3,9 +3,9 @@ classdef Data < handle
     properties (Access = public)
         nFeatures
         nSamples
-        nLabels        
+        nLabels
         Xtrain
-        Ytrain       
+        Ytrain
         Xtest
         Ytest
         Ntest
@@ -24,12 +24,12 @@ classdef Data < handle
 
     methods (Access = public)
 
-        function obj = Data(cParams)            
+        function obj = Data(cParams)
             obj.init(cParams)
             obj.loadData();
-            %obj.buildModel();
+            obj.buildModel();
             obj.splitdata()
-            obj.nLabels   = size(obj.Ytrain,2);                        
+            obj.nLabels   = size(obj.Ytrain,2);
             obj.nFeatures = size(obj.Xtrain,2);
         end
 
@@ -55,8 +55,8 @@ classdef Data < handle
         function plotCorrMatrix(obj)
             x = obj.data(:,1:end-1);
             nf = size(x,2);
-            figure            
-            t = tiledlayout(nf,nf,'TileSpacing','Compact'); 
+            figure
+            t = tiledlayout(nf,nf,'TileSpacing','Compact');
             title(t,'Features correlation matrix');
             for i = 1:nf
                 obj.plotCorrRow(i);
@@ -64,16 +64,30 @@ classdef Data < handle
         end
 
         function updateHyperparameter(obj,h)
-           switch h.type
-               case 'testRatio'
-                   obj.testRatio = h.value;
-                   obj.splitdata()
-               case 'polyGrade'
-                   obj.polynomialOrder = h.value;
-                   obj.buildModel(obj.X,obj.polynomialOrder);
-           end
+            switch h.type
+                case 'testRatio'
+                    obj.testRatio = h.value;
+                    obj.splitdata()
+                case 'polyGrade'
+                    obj.polynomialOrder = h.value;
+                    obj.buildModel(obj.X,obj.polynomialOrder);
+            end
         end
 
+        function Xful = buildModel(obj)
+            x  = obj.X;
+            d  = obj.polynomialOrder;
+            x1 = x(:,1);
+            x2 = x(:,2);
+            cont = 1;
+            for g = 1:d
+                for a = 0:g
+                    Xful(:,cont) = x2.^(a).*x1.^(g-a);
+                    cont = cont+1;
+                end
+            end
+            obj.X = Xful;
+        end
     end
 
     methods (Access = private)
@@ -102,33 +116,17 @@ classdef Data < handle
             obj.Y = y;
 
         end
-        
 
-        function Xful = buildModel(obj)
-            x  = obj.X;
-            d  = obj.polynomialOrder;
-            x1 = x(:,1);
-            x2 = x(:,2);
-            cont = 1;
-            for g = 1:d
-                for a = 0:g
-                    Xful(:,cont) = x2.^(a).*x1.^(g-a);
-                    cont = cont+1;
-                end
-            end
-            obj.X = Xful;
-        end
-        
         function exponents = generateExponents(obj,targetDeg)
             % Initialization of parameters
             exponents = [];
             currentExponents = zeros(1, obj.nFeatures);
             initialIndex = 1;
-            
+
             % Calculation of the possible exponents for the target degree
             exponents = obj.generateExponentsRecursive(targetDeg,initialIndex,currentExponents,exponents);
         end
-        
+
         function exponents = generateExponentsRecursive(obj,targetDeg,currentIndex,currentExponents,exponents)
             % Assignation of exponents for the base case
             if currentIndex == obj.nFeatures

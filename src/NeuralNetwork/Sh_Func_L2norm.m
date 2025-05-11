@@ -10,7 +10,7 @@ classdef Sh_Func_L2norm < handle
             obj.init(cParams)            
         end
 
-        function [j,dj,isBD] = computeStochasticCostAndGradient(obj,x,moveBatch)
+        function [j,dj,isBD] = computeStochasticCostAndGradient(obj,x,~)
             [j,dj] = obj.computeFunctionAndGradient(x);
             isBD = false;
         end    
